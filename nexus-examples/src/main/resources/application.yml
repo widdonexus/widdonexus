@@ -1,0 +1,48 @@
+# application.yml
+server:
+  port: 9000
+spring:
+  application:
+    name: Widdo Nexus Framework - nexus examples
+widdo:
+  nexus:
+    scan:
+      base-packages:
+        - com.widdo.nexus.examples.repository
+    database:
+      type: NEO4J
+      name: neo4j1
+    neo4j:
+      uri: bolt://widdo-neo4j:7687
+      username: neo4j
+      password: widdo_neo4j
+      pool:
+        maxConnectionPoolSize: 50
+        connectionAcquisitionTimeout: 30
+    execution:
+      retryEnabled: true
+      maxRetries: 3
+      retryDelayMs: 1000
+      slowQueryThresholdMs: 500
+    logging:
+      enableQueryLogging: true
+      enableTransactionLogging: true
+      level: DEBUG
+    query-locations:
+      - classpath:custom-queries/*.yml
+      - file:/etc/nexus/queries.yml
+    enabled: true
+
+logging:
+  level:
+    com.widdo.nexus: DEBUG
+    com.widdo.nexus.core.query: TRACE
+  pattern:
+    console: "%magenta(%d{yyyy-MM-dd HH:mm:ss.SSS}) %yellow([%thread]) %highlight(%-5level) %green(%class.%method:%line) [%X{queryId}] - %msg%n"
+
+#banner中打印的模板信息
+info:
+  app:
+    name: ${spring.application.name}
+    description: "@project.description@"
+    version: "@project.version@"

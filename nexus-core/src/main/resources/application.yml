@@ -1,0 +1,37 @@
+# application.yml
+widdo:
+  nexus:
+    scan:
+      base-packages:
+        - com.widdo.nexus.examples.repository
+    database:
+      type: NEO4J
+      name: mydatabase
+    neo4j:
+      uri: bolt://localhost:7687
+      username: neo4j
+      password: secretpassword
+      pool:
+        maxConnectionPoolSize: 50
+        connectionAcquisitionTimeout: 30
+    execution:
+      retryEnabled: true
+      maxRetries: 3
+      retryDelayMs: 1000
+      slowQueryThresholdMs: 500
+    logging:
+      enableQueryLogging: true
+      enableTransactionLogging: true
+      level: DEBUG
+    query-locations:
+      - classpath:custom-queries/*.yml
+      - file:/etc/nexus/queries.yml
+    enabled: true
+
+# ????
+logging:
+  level:
+    cn.widdo.nexus: DEBUG
+    cn.widdo.nexus.core.query: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

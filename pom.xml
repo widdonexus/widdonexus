@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.widdo</groupId>
+    <artifactId>widdo-nexus</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Widdo Nexus Framework Parent</name>
+    <description>Next-generation Graph Database OGM Framework - The Nexus of Your Data</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>nexus-core</module>
+        <module>nexus-spring</module>
+        <module>nexus-neo4j</module>
+        <module>nexus-migrate</module>
+        <module>nexus-cli</module>
+        <module>nexus-examples</module>
+        <module>nexus-spring-boot-starter</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+
+        <!-- 依赖版本 -->
+        <spring-boot.version>3.5.5</spring-boot.version>
+        <neo4j-java-driver.version>5.28.9</neo4j-java-driver.version>
+        <janusgraph.version>0.6.2</janusgraph.version>
+        <gremlin-driver.version>3.6.1</gremlin-driver.version>
+        <jackson-databind.version>2.19.2</jackson-databind.version>
+        <fastjson.version>1.2.83</fastjson.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>${neo4j-java-driver.version}</version>
+            </dependency>
+
+            <!-- 内部模块依赖 -->
+            <dependency>
+                <groupId>com.widdo</groupId>
+                <artifactId>nexus-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.widdo</groupId>
+                <artifactId>nexus-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.widdo</groupId>
+                <artifactId>nexus-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.widdo</groupId>
+                <artifactId>nexus-neo4j</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- 外部依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 可选：JSON输出支持 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <!--<configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>-->
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

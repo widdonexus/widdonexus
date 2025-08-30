@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.widdo</groupId>
+        <artifactId>widdo-nexus</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.widdo</groupId>
+    <artifactId>nexus-examples</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>nexus-examples</name>
+    <description>nexus-examples</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+    <dependencies>
+        <!--1. 引入starter-->
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <!--2. 按需引入数据库适配器-->
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-neo4j</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!--<configuration>
+                    &lt;!&ndash;指定主类&ndash;&gt;
+                    <mainClass>com.widdo.nexus.examples.NexusExamplesApplication</mainClass>
+                    &lt;!&ndash;确保在repackage时包含构建信息&ndash;&gt;
+                    <executable>true</executable>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>-->
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

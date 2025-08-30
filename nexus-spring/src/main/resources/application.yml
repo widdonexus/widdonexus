@@ -1,0 +1,6 @@
+#banner????????
+info:
+  app:
+    name: ${spring.application.name}
+    description: "@project.description@"
+    version: "@project.version@"

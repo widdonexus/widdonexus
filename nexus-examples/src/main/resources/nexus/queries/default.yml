@@ -1,0 +1,15 @@
+queries:
+  employee.findCompany:
+    wnql: |
+      MATCH (e:employee)-[:work_in]->(c:company)
+      WHERE e.name = $name
+      RETURN c
+      ORDER BY c.name DESC
+      SKIP $offset LIMIT $limit
+    description: 查询员工就职的公司信息
+
+  location.findOnePath:
+    wnql: |
+      MATCH path = (s:Location {name: $name})-[:ROAD]->(e:Location)
+      RETURN path
+    description: 查询已知路径深度为1的所有路径图

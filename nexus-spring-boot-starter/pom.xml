@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.widdo</groupId>
+        <artifactId>widdo-nexus</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.widdo</groupId>
+    <artifactId>nexus-spring-boot-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>nexus-spring-boot-starter</name>
+    <description>nexus-spring-boot-starter</description>
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+    <dependencies>
+        <!-- 1. 核心模块 (必须) -->
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-core</artifactId>
+        </dependency>
+
+        <!-- 2. Spring自动配置模块 (必须) -->
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-spring</artifactId>
+        </dependency>
+
+        <!-- 3. 数据库适配器 (设为可选，用户按需引入) -->
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-neo4j</artifactId>
+            <optional>true</optional> <!-- 关键：optional=true -->
+        </dependency>
+
+        <!-- 不直接包含任何日志实现 -->
+        <!-- 但为开发体验，可添加Logback为可选依赖 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.8</version>
+            <optional>true</optional> <!-- 关键：optional=true -->
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.4</version> <!-- 使用与 Spring Boot 3.5.x 兼容的版本 -->
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
