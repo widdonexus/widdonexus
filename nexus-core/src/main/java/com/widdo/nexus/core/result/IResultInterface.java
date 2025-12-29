@@ -28,7 +28,7 @@ public interface IResultInterface {
      **/
     String getMsg();
 
-    enum SysResultEnum implements IResultInterface {
+    enum SysResult implements IResultInterface {
 
         /**
          * success.
@@ -66,7 +66,7 @@ public interface IResultInterface {
          * @param code code
          * @param msg  msg
          */
-        SysResultEnum(final String code, final String msg) {
+        SysResult(final String code, final String msg) {
             this.code = code;
             this.msg = msg;
         }
@@ -83,7 +83,7 @@ public interface IResultInterface {
 
     }
 
-    enum StudyResultEnum implements IResultInterface {
+    enum StudyResult implements IResultInterface {
 
         /**
          * success.
@@ -111,7 +111,7 @@ public interface IResultInterface {
          * @param code code
          * @param msg  msg
          */
-        StudyResultEnum(final String code, final String msg) {
+        StudyResult(final String code, final String msg) {
             this.code = code;
             this.msg = msg;
         }
@@ -128,7 +128,7 @@ public interface IResultInterface {
 
     }
 
-    enum LifeResultEnum implements IResultInterface {
+    enum LifeResult implements IResultInterface {
 
         /**
          * the result typed success of life.
@@ -156,7 +156,7 @@ public interface IResultInterface {
          * @param code code
          * @param msg  msg
          */
-        LifeResultEnum(final String code, final String msg) {
+        LifeResult(final String code, final String msg) {
             this.code = code;
             this.msg = msg;
         }
@@ -173,7 +173,7 @@ public interface IResultInterface {
 
     }
 
-    enum Neo4jResultEnum implements IResultInterface {
+    enum Neo4j implements IResultInterface {
 
         /**
          * the result typed enum of neo4jResult.
@@ -201,7 +201,7 @@ public interface IResultInterface {
          * @param code code
          * @param msg  msg
          */
-        Neo4jResultEnum(final String code, final String msg) {
+        Neo4j(final String code, final String msg) {
             this.code = code;
             this.msg = msg;
         }
@@ -218,7 +218,7 @@ public interface IResultInterface {
 
     }
 
-    enum HadoopEnum implements IResultInterface {
+    enum Hadoop implements IResultInterface {
 
         /**
          * the result typed enum of neo4jResult.
@@ -246,7 +246,7 @@ public interface IResultInterface {
          * @param code code
          * @param msg  msg
          */
-        HadoopEnum(final String code, final String msg) {
+        Hadoop(final String code, final String msg) {
             this.code = code;
             this.msg = msg;
         }

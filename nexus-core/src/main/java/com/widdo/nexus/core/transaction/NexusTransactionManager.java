@@ -1,6 +1,6 @@
 package com.widdo.nexus.core.transaction;
 
-import com.widdo.nexus.core.adapter.NexusDatabaseAdapter;
+import com.widdo.nexus.core.adapter.NexusGraphAdapter;
 import com.widdo.nexus.core.log.LogMessages;
 import com.widdo.nexus.core.log.NexusLogger;
 import org.slf4j.MDC;
@@ -8,7 +8,7 @@ import org.slf4j.MDC;
 public class NexusTransactionManager {
     private static final NexusLogger log = NexusLogger.getLogger(NexusTransactionManager.class);
 
-    public NexusTransaction beginTransaction(NexusDatabaseAdapter adapter) {
+    public NexusTransaction beginTransaction(NexusGraphAdapter adapter) {
         NexusTransaction transaction = adapter.beginTransaction();
         String txId = transaction.txId();
 

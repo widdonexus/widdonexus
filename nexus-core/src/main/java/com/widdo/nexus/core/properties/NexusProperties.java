@@ -14,7 +14,6 @@ package com.widdo.nexus.core.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
@@ -28,54 +27,38 @@ public class NexusProperties {
 
     private boolean enabled = true;
 
-    private Database database = new Database();
+    private Graph graph = new Graph();
 
-    @NestedConfigurationProperty
-    private Neo4j neo4j = new Neo4j();
-    private JanusGraph janusgraph = new JanusGraph();
-    private Execution execution = new Execution();
+    private Hadoop hadoop = new Hadoop();
+
     private Logging logging = new Logging();
 
     private Exception exception = new Exception();
 
     private Scan scan = new Scan();
 
+    private Migration migration = new Migration();
+
     /**
      * 载自定义查询位置
      */
     private List<String> queryLocations;
 
+    public Hadoop getHadoop() {
+        return hadoop;
+    }
+
+    public void setHadoop(Hadoop hadoop) {
+        this.hadoop = hadoop;
+    }
+
     // Getter和Setter
-    public Database getDatabase() {
-        return database;
+    public Graph getGraph() {
+        return graph;
     }
 
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
-    public Neo4j getNeo4j() {
-        return neo4j;
-    }
-
-    public void setNeo4j(Neo4j neo4j) {
-        this.neo4j = neo4j;
-    }
-
-    public JanusGraph getJanusgraph() {
-        return janusgraph;
-    }
-
-    public void setJanusgraph(JanusGraph janusgraph) {
-        this.janusgraph = janusgraph;
-    }
-
-    public Execution getExecution() {
-        return execution;
-    }
-
-    public void setExecution(Execution execution) {
-        this.execution = execution;
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
 
     public Logging getLogging() {
@@ -118,41 +101,90 @@ public class NexusProperties {
         this.scan = scan;
     }
 
-    // 嵌套配置类
-    @Data
-    public static class Database {
-        private String type = "NEO4J";
-        private String name;
+    public Migration getMigration() {
+        return migration;
     }
 
+    public void setMigration(Migration migration) {
+        this.migration = migration;
+    }
+
+    // 嵌套配置类
     @Data
-    public static class Neo4j {
-        private String uri = "bolt://localhost:7687";
-        private String username = "neo4j";
-        private String password;
-        private String database = "neo4j";
-        private Pool pool = new Pool();
+    public static class Graph {
+
+        private Database database = new Database();
+
+        private Neo4j neo4j = new Neo4j();
+
+        private JanusGraph janusGraph = new JanusGraph();
+
+        private Execution execution = new Execution();
 
         @Data
-        public static class Pool {
-            private int maxConnectionPoolSize = 100;
-            private int connectionAcquisitionTimeout = 60;
-            private int maxConnectionLifetime = 3600;
+        public static class Database {
+            private String type = "NEO4J";
+            private String name;
+        }
+
+        @Data
+        public static class Neo4j {
+            private String uri = "bolt://localhost:7687";
+            private String username = "neo4j";
+            private String password;
+            private String database = "neo4j";
+            private Pool pool = new Pool();
+
+            @Data
+            public static class Pool {
+                private int maxConnectionPoolSize = 100;
+                private int connectionAcquisitionTimeout = 60;
+                private int maxConnectionLifetime = 3600;
+            }
+        }
+
+        @Data
+        public static class JanusGraph {
+            private String configFile;
+            private Map<String, Object> properties = new HashMap<>();
+        }
+
+        @Data
+        public static class Execution {
+            private boolean retryEnabled = true;
+            private int maxRetries = 3;
+            private long retryDelayMs = 1000;
+            private long slowQueryThresholdMs = 1000;
         }
     }
 
     @Data
-    public static class JanusGraph {
-        private String configFile;
-        private Map<String, Object> properties = new HashMap<>();
-    }
+    public static class Hadoop {
 
-    @Data
-    public static class Execution {
-        private boolean retryEnabled = true;
-        private int maxRetries = 3;
-        private long retryDelayMs = 1000;
-        private long slowQueryThresholdMs = 1000;
+        private Hdfs hdfs = new Hdfs();
+
+        private Database database = new Database();
+
+        @Data
+        public static class Database {
+            private String type = "NEO4J";
+            private String name;
+        }
+
+        @Data
+        public static class Hdfs {
+
+            private String username = "neo4j";
+
+            private Nn nn = new Nn();
+
+            @Data
+            public static class Nn {
+                private String webAddr;
+                private String insideAddr;
+            }
+
+        }
     }
 
     @Data
@@ -175,5 +207,11 @@ public class NexusProperties {
     @Data
     public static class Scan {
         private List<String> basePackages = new ArrayList<>();
+    }
+
+    @Data
+    public static class Migration {
+        private String source;
+        private String target;
     }
 }

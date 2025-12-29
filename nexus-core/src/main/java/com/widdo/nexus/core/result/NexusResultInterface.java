@@ -4,6 +4,7 @@ import com.widdo.nexus.core.result.entity.*;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * NexusResultInterface, convert result to {@link NexusResult}.
@@ -138,9 +139,9 @@ public interface NexusResultInterface<T, R> {
                         }));
                     }
 
-                    return NexusResult.response(IResultInterface.Neo4jResultEnum.SUCCESS, nodeList);
+                    return NexusResult.response(IResultInterface.Neo4j.SUCCESS, nodeList);
                 }
-                return NexusResult.response(IResultInterface.Neo4jResultEnum.FAIL);
+                return NexusResult.response(IResultInterface.Neo4j.FAIL);
             }
         },
 
@@ -162,9 +163,9 @@ public interface NexusResultInterface<T, R> {
                             }
                         }));
                     }
-                    return NexusResult.response(IResultInterface.Neo4jResultEnum.SUCCESS, relationShipList);
+                    return NexusResult.response(IResultInterface.Neo4j.SUCCESS, relationShipList);
                 }
-                return NexusResult.response(IResultInterface.Neo4jResultEnum.FAIL);
+                return NexusResult.response(IResultInterface.Neo4j.FAIL);
             }
         },
 
@@ -194,9 +195,9 @@ public interface NexusResultInterface<T, R> {
                     map.put("nodes", nodeList);
                     map.put("relationships", relationShipList);
 
-                    return NexusResult.response(IResultInterface.Neo4jResultEnum.SUCCESS, map);
+                    return NexusResult.response(IResultInterface.Neo4j.SUCCESS, map);
                 }
-                return NexusResult.response(IResultInterface.Neo4jResultEnum.FAIL);
+                return NexusResult.response(IResultInterface.Neo4j.FAIL);
             }
         },
 
@@ -206,35 +207,35 @@ public interface NexusResultInterface<T, R> {
         ALL {
             @Override
             public NexusResult wrapper(Result<List<Map<String, Value>>> listResult) {
-
-                final HashMap<String, Object> map = new HashMap<>(2);
-
-                final List<Map<String, Object>> nodeList = new ArrayList<>();
-                final List<Map<String, Object>> relationShipList = new ArrayList<>();
-                final List<Object> list = new ArrayList<>();
-
-                if (ResultEnum.SUCCESS.equals(listResult.getStatus())) {
-                    final List<Map<String, Value>> listData = listResult.getData();
-                    if (!ObjectUtils.isEmpty(listData)) {
-                        listData.forEach(p -> p.forEach((k, v) -> {
-                            final String type = v.getType();
-                            switch (type) {
-                                case Neo4jType.PATH -> setPath(v, nodeList, relationShipList);
-                                case Neo4jType.NODE -> setNode(v, nodeList);
-                                case Neo4jType.RELATIONSHIP -> setRelationship(v, relationShipList);
-                                case Neo4jType.LISTOFANY -> setList(v, list);
-                                default -> throw new UnsupportedOperationException();
-                            }
-                        }));
-                    }
-                    map.put("nodes", nodeList);
-                    map.put("relationships", relationShipList);
-                    map.put("list", list);
-
-                    return NexusResult.response(IResultInterface.Neo4jResultEnum.SUCCESS, map);
+                if (!ResultEnum.SUCCESS.equals(listResult.getStatus())) {
+                    return NexusResult.response(IResultInterface.Neo4j.FAIL);
                 }
-                return NexusResult.response(IResultInterface.Neo4jResultEnum.FAIL);
+
+                List<Map<String, Value>> listData = listResult.getData();
+                if (ObjectUtils.isEmpty(listData)) {
+                    return NexusResult.response(IResultInterface.Neo4j.SUCCESS, Collections.emptyList());
+                }
+
+                final List<Map<String, ?>> collect = listData.stream()
+                        .flatMap(map -> map.entrySet().stream())
+                        .map(entry -> {
+                            final String key = entry.getKey();
+                            final Value value = entry.getValue();
+                            return switch (value.getType()) {
+                                case Neo4jType.PATH -> Map.of(key, value.asPath());
+                                case Neo4jType.NODE -> Map.of(key, value.asNode());
+                                case Neo4jType.RELATIONSHIP -> Map.of(key, value.asRelationship());
+                                case Neo4jType.LISTOFANY -> Map.of(key, value.asList());
+                                default ->
+                                        throw new UnsupportedOperationException("Unsupported Neo4j type: " + value.getType());
+                            };
+                        })
+                        .collect(Collectors.toList());
+
+                return NexusResult.response(IResultInterface.Neo4j.SUCCESS, collect);
+
             }
+
         }
 
     }
@@ -247,7 +248,7 @@ public interface NexusResultInterface<T, R> {
         HDFS {
             @Override
             public NexusResult wrapper(Object o) {
-                return NexusResult.response(IResultInterface.HadoopEnum.SUCCESS, o);
+                return NexusResult.response(IResultInterface.Hadoop.SUCCESS, o);
             }
         },
 

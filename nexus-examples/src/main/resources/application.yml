@@ -6,28 +6,42 @@ spring:
     name: Widdo Nexus Framework - nexus examples
 widdo:
   nexus:
+    exception:
+      include-stacktrace: false
     scan:
       base-packages:
         - com.widdo.nexus.examples.repository
-    database:
-      type: NEO4J
-      name: neo4j1
-    neo4j:
-      uri: bolt://widdo-neo4j:7687
-      username: neo4j
-      password: widdo_neo4j
-      pool:
-        maxConnectionPoolSize: 50
-        connectionAcquisitionTimeout: 30
-    execution:
-      retryEnabled: true
-      maxRetries: 3
-      retryDelayMs: 1000
-      slowQueryThresholdMs: 500
+    graph:
+      database:
+        type: NEO4J
+        name: neo4j1
+      neo4j:
+        uri: bolt://widdo-neo4j:7687
+        username: neo4j
+        password: widdo_neo4j
+        pool:
+          max-connection-lifetime: 50
+          connection-acquisition-timeout: 30
+      execution:
+        max-retries: 3
+        retry-enabled: true
+        retry-delay-ms: 1000
+        slow-query-threshold-ms: 500
+    hadoop:
+      database:
+        type: HDFS
+      hdfs:
+        username: hadoop
+        nn:
+          #NameNode Web
+          web-addr: http://hadoop102:9870
+          #NameNode内部服务端口
+          inside-addr: hdfs://hadoop102:9820
     logging:
-      enableQueryLogging: true
-      enableTransactionLogging: true
-      level: DEBUG
+      enable-query-logging: true
+      enable-performance-logging: true
+      enable-transaction-logging: true
+      level: debug
     query-locations:
       - classpath:custom-queries/*.yml
       - file:/etc/nexus/queries.yml

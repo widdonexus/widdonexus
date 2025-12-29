@@ -25,15 +25,15 @@ public class NexusPropertiesValidator {
      */
     public static void validate(NexusProperties properties) {
         // 检查必需的配置
-        NexusExceptionHelper.throwIf(properties.getDatabase() == null,
+        NexusExceptionHelper.throwIf(properties.getGraph().getDatabase().getType() == null,
                 () -> NexusExceptionHelper.configError("Database configuration is required"));
 
-        NexusExceptionHelper.throwIf(!StringUtils.hasLength(properties.getDatabase().getType()),
+        NexusExceptionHelper.throwIf(!StringUtils.hasLength(properties.getGraph().getDatabase().getType()),
                 () -> NexusExceptionHelper.configError("Database type is required"));
 
         // 检查特定数据库配置
-        if ("neo4j".equals(properties.getDatabase().getType().toLowerCase())) {
-            NexusExceptionHelper.throwIf(!StringUtils.hasLength(properties.getNeo4j().getUri()),
+        if ("neo4j".equals(properties.getGraph().getDatabase().getType().toLowerCase())) {
+            NexusExceptionHelper.throwIf(!StringUtils.hasLength(properties.getGraph().getNeo4j().getUri()),
                     () -> NexusExceptionHelper.configError("Neo4j URI is required"));
         }
     }

@@ -3,7 +3,7 @@ package com.widdo.nexus.core.adapter;
 import com.widdo.nexus.core.log.NexusLogger;
 
 /**
- * AbstractNexusAdapterFactory.
+ * AbstractNexusGraphAdapterFactory.
  * <p>
  * 抽象数据库适配器工厂
  *
@@ -11,7 +11,7 @@ import com.widdo.nexus.core.log.NexusLogger;
  * @date 2025/08/27 17:07
  * @since 0.0.1-SNAPSHOT
  */
-public abstract class AbstractNexusAdapterFactory implements NexusAdapterFactory {
+public abstract class AbstractNexusGraphAdapterFactory implements NexusGraphAdapterFactory {
 
     protected final NexusLogger logger = NexusLogger.getLogger(getClass());
 

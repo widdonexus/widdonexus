@@ -1,6 +1,8 @@
 package com.widdo.nexus.core.query;
 
 import com.widdo.nexus.core.adapter.NexusDatabaseAdapter;
+import com.widdo.nexus.core.adapter.NexusGraphAdapter;
+import com.widdo.nexus.core.adapter.NexusHadoopAdapter;
 import com.widdo.nexus.core.properties.NexusProperties;
 
 /**
@@ -12,23 +14,29 @@ import com.widdo.nexus.core.properties.NexusProperties;
  * @date 2025/08/27 18:20
  * @since 0.0.1-SNAPSHOT
  */
-public class NexusExecutionStrategyFactory {
-
-    private final NexusProperties properties;
-
-    public NexusExecutionStrategyFactory(NexusProperties properties) {
-        this.properties = properties;
-    }
+public record NexusExecutionStrategyFactory(NexusProperties properties) {
 
     public NexusQueryExecutionStrategy createStrategy(NexusDatabaseAdapter adapter) {
-        if (properties.getExecution().isRetryEnabled()) {
-            return new NexusRetryExecutionStrategy(
-                    adapter,
-                    properties.getExecution().getMaxRetries(),
-                    properties.getExecution().getRetryDelayMs()
-            );
+
+        if (adapter instanceof NexusGraphAdapter) {
+            final NexusGraphAdapter nexusAdapter = (NexusGraphAdapter) adapter;
+
+            if (properties.getGraph().getExecution().isRetryEnabled()) {
+                return new NexusRetryExecutionStrategy(
+                        nexusAdapter,
+                        properties.getGraph().getExecution().getMaxRetries(),
+                        properties.getGraph().getExecution().getRetryDelayMs()
+                );
+            }
+
+            return new NexusDirectExecutionStrategy(nexusAdapter);
         }
 
-        return new NexusDirectExecutionStrategy(adapter);
+        if (adapter instanceof NexusHadoopAdapter) {
+            final NexusHadoopAdapter nexusAdapter = (NexusHadoopAdapter) adapter;
+            return new NexusHadoopDirectExecutionStrategy(nexusAdapter);
+        }
+
+        return null;
     }
 }

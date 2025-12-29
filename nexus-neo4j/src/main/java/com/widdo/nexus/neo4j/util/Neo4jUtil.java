@@ -73,7 +73,6 @@ public class Neo4jUtil {
             }
         }
     }
-
     public static Result<List<Map<String, Value>>> originResult(NexusGraphResultSet resultSet) {
         final NexusNeo4jResultSet result = (NexusNeo4jResultSet) resultSet;
         List<String> keys = result.keys();

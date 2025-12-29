@@ -1,7 +1,7 @@
 package com.widdo.nexus.core.query;
 
 import com.widdo.nexus.core.enums.QueryExecutionType;
-import com.widdo.nexus.core.result.NexusGraphResultSet;
+import com.widdo.nexus.core.support.template.NexusQueryContext;
 
 import java.util.Map;
 
@@ -14,9 +14,9 @@ import java.util.Map;
  * @date 2025/08/27 18:17
  * @since 0.0.1-SNAPSHOT
  */
-public interface NexusQueryExecutionStrategy {
+public interface NexusQueryExecutionStrategy<A, R> {
 
-    NexusGraphResultSet execute(String query, Map<String, Object> parameters);
+    R execute(String query, Map<String, Object> parameters, NexusQueryContext context);
 
     QueryExecutionType getExecutionType();
 }

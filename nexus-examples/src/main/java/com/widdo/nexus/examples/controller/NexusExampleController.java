@@ -1,12 +1,17 @@
 package com.widdo.nexus.examples.controller;
 
+import com.widdo.nexus.core.result.IResultInterface;
 import com.widdo.nexus.core.result.NexusResult;
+import com.widdo.nexus.core.result.entity.Value;
 import com.widdo.nexus.core.support.query.NexusQuery;
 import com.widdo.nexus.core.support.query.NexusQueryBuilder;
-import com.widdo.nexus.core.support.template.NexusAdvancedTemplate;
+import com.widdo.nexus.hadoop.templete.NexusHdfsAdvancedTemplate;
+import com.widdo.nexus.neo4j.template.NexusNeo4jAdvancedTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,17 +25,20 @@ import java.util.Map;
 @RestController
 public class NexusExampleController {
 
-    private final NexusAdvancedTemplate nexusAdvancedTemplate;
+    private final NexusNeo4jAdvancedTemplate nexusNeo4jAdvancedTemplate;
+
+    private final NexusHdfsAdvancedTemplate nexusHdfsAdvancedTemplate;
 
     @Autowired
-    public NexusExampleController(NexusAdvancedTemplate nexusAdvancedTemplate) {
-        this.nexusAdvancedTemplate = nexusAdvancedTemplate;
+    public NexusExampleController(NexusNeo4jAdvancedTemplate nexusNeo4jAdvancedTemplate,
+                                  NexusHdfsAdvancedTemplate nexusHdfsAdvancedTemplate) {
+        this.nexusNeo4jAdvancedTemplate = nexusNeo4jAdvancedTemplate;
+        this.nexusHdfsAdvancedTemplate = nexusHdfsAdvancedTemplate;
     }
 
     /**
      * Nexus 函数式查询语言 wnql
      *
-     * @param
      * @return com.widdo.nexus.core.result.NexusResult
      * @author XYL
      * @date 2025/08/30 17:45:32
@@ -44,21 +52,63 @@ public class NexusExampleController {
                 .returning(r -> r.returning("e"))
                 .build();
 
-        return nexusAdvancedTemplate.execute(query, NexusResult.class);
+        return nexusNeo4jAdvancedTemplate.execute(query, NexusResult.class);
     }
 
     /**
      * Nexus wnql查询
      *
-     * @param params
-     *
+     * @param params params
+     * @return com.widdo.nexus.core.result.NexusResult
      * @author XYL
      * @date 2025/08/31 00:11:27
-     * @return com.widdo.nexus.core.result.NexusResult
      */
     @PostMapping(value = "/wnql")
     public NexusResult wnqlId(@RequestBody Map<String, Object> params) {
-        return nexusAdvancedTemplate.execute("location.findOnePath",
+        return nexusNeo4jAdvancedTemplate.execute("location.findOnePath",
                 params, NexusResult.class);
+    }
+
+    /**
+     * index.
+     *
+     * @return com.widdo.nexus.core.result.NexusResult
+     * @author XYL
+     * @date 2025/12/17 10:08:10
+     */
+    @PostMapping(value = "/index")
+    public NexusResult index() {
+        List<Map<String, Value>> indexes = nexusNeo4jAdvancedTemplate.executeCypher(
+                "SHOW INDEXES", Collections.emptyMap(), List.class);
+        return NexusResult.response(IResultInterface.Neo4j.SUCCESS, indexes);
+    }
+
+
+    /**
+     * Nexus Hadoop 命令Id 操作
+     * <p>
+     * hdfs常用命令
+     *
+     * @param params params
+     * @return com.widdo.nexus.core.result.NexusResult
+     * @author XYL
+     * @date 2025/12/09 15:19:22
+     */
+    @PostMapping(value = "/hadoop")
+    public NexusResult hadoop(@RequestBody Map<String, Object> params) {
+        return nexusHdfsAdvancedTemplate.execute(params.getOrDefault("commandId", "").toString(), params, NexusResult.class);
+    }
+
+    /**
+     * Nexus Hadoop  命令操作
+     *
+     * @param params
+     * @return com.widdo.nexus.core.result.NexusResult
+     * @author XYL
+     * @date 2025/12/17 10:07:50
+     */
+    @PostMapping(value = "/hadoop/command")
+    public NexusResult hadoopCommand(@RequestBody Map<String, Object> params) {
+        return nexusHdfsAdvancedTemplate.executeCypher(params.getOrDefault("command", "").toString(), params, NexusResult.class);
     }
 }

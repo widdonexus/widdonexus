@@ -1,13 +1,10 @@
 package com.widdo.nexus.cli.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.widdo.nexus.cli.properties.NexusCliProperties;
 import com.widdo.nexus.cli.shell.TableRenderer;
+import com.widdo.nexus.cli.util.NexusCliUtil;
 import com.widdo.nexus.core.query.NexusQueryLoader;
-import com.widdo.nexus.core.support.template.NexusAdvancedTemplate;
+import com.widdo.nexus.core.support.template.AbstractNexusAdvancedTemplate;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -29,16 +26,13 @@ import java.util.stream.Collectors;
 @ShellCommandGroup("Query Commands")
 public class QueryCommand {
 
-    private final NexusAdvancedTemplate template;
+    private final AbstractNexusAdvancedTemplate template;
     private final NexusQueryLoader queryLoader;
     private final NexusCliProperties properties;
     private final TableRenderer tableRenderer;
 
-    private final ObjectMapper jsonMapper;
-    private final CsvMapper csvMapper;
-    private final ObjectMapper yamlMapper;
 
-    public QueryCommand(NexusAdvancedTemplate template,
+    public QueryCommand(AbstractNexusAdvancedTemplate template,
                         NexusQueryLoader queryLoader,
                         NexusCliProperties properties,
                         TableRenderer tableRenderer) {
@@ -47,9 +41,7 @@ public class QueryCommand {
         this.properties = properties;
         this.tableRenderer = tableRenderer;
 
-        this.jsonMapper = new ObjectMapper();
-        this.csvMapper = new CsvMapper();
-        this.yamlMapper = new ObjectMapper(new YAMLFactory());
+
     }
 
 
@@ -63,7 +55,7 @@ public class QueryCommand {
             List<Map<String, Object>> results = template.executeCypher(
                     cypher, Collections.emptyMap(), List.class);
 
-            return formatOutput(results, format);
+            return NexusCliUtil.formatOutput(results, format);
         } catch (Exception ex) {
             return "Error: " + ex.getMessage();
         }
@@ -77,10 +69,10 @@ public class QueryCommand {
             @ShellOption(help = "Output format", defaultValue = "TABLE") NexusCliProperties.OutputFormat format) {
 
         try {
-            Map<String, Object> params = parseJsonParams(paramsJson);
+            Map<String, Object> params = NexusCliUtil.parseJsonParams(paramsJson);
             List<Map<String, Object>> results = template.execute(id, params, List.class);
 
-            return formatOutput(results, format);
+            return NexusCliUtil.formatOutput(results, format);
         } catch (Exception ex) {
             return "Error: " + ex.getMessage();
         }
@@ -102,98 +94,5 @@ public class QueryCommand {
         return queryLoader.getDescription(queryId);
     }
 
-    /**
-     * 解析JSON参数字符串为Map
-     */
-    private Map<String, Object> parseJsonParams(String paramsJson) {
-        try {
-            if (paramsJson == null || paramsJson.trim().isEmpty() || "{}".equals(paramsJson)) {
-                return Collections.emptyMap();
-            }
-            return jsonMapper.readValue(paramsJson, Map.class);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid JSON parameters: " + e.getMessage());
-        }
-    }
 
-
-    private String formatOutput(List<Map<String, Object>> results,
-                                NexusCliProperties.OutputFormat format) {
-        switch (format) {
-            case JSON:
-                return toJson(results);
-            case CSV:
-                return toCsv(results);
-            case YAML:
-                return toYaml(results);
-            default:
-                return toTable(results);
-        }
-    }
-
-    /**
-     * 将结果转换为JSON格式
-     */
-    private String toJson(List<Map<String, Object>> results) {
-        try {
-            return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results);
-        } catch (Exception e) {
-            return "Error converting to JSON: " + e.getMessage();
-        }
-    }
-
-    /**
-     * 将结果转换为CSV格式
-     */
-    private String toCsv(List<Map<String, Object>> results) {
-        if (results.isEmpty()) {
-            return "";
-        }
-
-        try {
-            // 获取所有列名
-            Set<String> columns = results.get(0).keySet();
-
-            // 创建CSV schema
-            CsvSchema.Builder schemaBuilder = CsvSchema.builder();
-            for (String column : columns) {
-                schemaBuilder.addColumn(column);
-            }
-            CsvSchema schema = schemaBuilder.build().withHeader();
-
-            // 转换为CSV
-            return csvMapper.writer(schema).writeValueAsString(results);
-        } catch (Exception e) {
-            return "Error converting to CSV: " + e.getMessage();
-        }
-    }
-
-    /**
-     * 将结果转换为YAML格式
-     */
-    private String toYaml(List<Map<String, Object>> results) {
-        try {
-            return yamlMapper.writeValueAsString(results);
-        } catch (Exception e) {
-            return "Error converting to YAML: " + e.getMessage();
-        }
-    }
-
-    private String toTable(List<Map<String, Object>> results) {
-        if (results.isEmpty()) {
-            return "No results found";
-        }
-
-        Set<String> columns = results.get(0).keySet();
-        List<List<String>> rows = results.stream()
-                .map(row -> columns.stream()
-                        .map(col -> String.valueOf(row.get(col)))
-                        .collect(Collectors.toList()))
-                .collect(Collectors.toList());
-
-        return tableRenderer.renderTable(
-                new ArrayList<>(columns),
-                rows
-        );
-    }
 }

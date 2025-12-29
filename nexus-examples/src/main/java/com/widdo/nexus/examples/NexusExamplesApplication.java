@@ -9,9 +9,11 @@ package com.widdo.nexus.examples;
  * @since 0.0.1-SNAPSHOT
  */
 
+import com.widdo.nexus.starter.annotation.EnableNexus;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@EnableNexus
 @SpringBootApplication
 public class NexusExamplesApplication {
     public static void main(String[] args) {
