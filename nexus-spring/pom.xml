@@ -35,6 +35,12 @@
             <artifactId>nexus-neo4j</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-hadoop</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,44 +1,37 @@
 package com.widdo.nexus.core.support.template;
 
-import com.widdo.nexus.core.adapter.NexusDatabaseAdapter;
-import com.widdo.nexus.core.entity.NexusEntityMapper;
+import com.widdo.nexus.core.adapter.NexusHadoopAdapter;
 import com.widdo.nexus.core.exception.NexusExceptionHelper;
 import com.widdo.nexus.core.log.NexusLogger;
 import com.widdo.nexus.core.properties.NexusProperties;
 import com.widdo.nexus.core.query.NexusExecutionStrategyFactory;
 import com.widdo.nexus.core.query.NexusQueryExecutionStrategy;
 import com.widdo.nexus.core.query.NexusQueryLoader;
-import com.widdo.nexus.core.result.NexusGraphResultSet;
+import com.widdo.nexus.core.result.NexusResult;
 import com.widdo.nexus.core.support.query.NexusQuery;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
- * NexusAdvancedTemplate
- * <p>
- * Nexus高级模板类
+ * AbstractNexusHadoopAdvancedTemplate
  *
  * @author XYL
- * @date 2025/08/27 16:19
+ * @date 2025/12/14 19:16
  * @since 0.0.1-SNAPSHOT
  */
-public class NexusAdvancedTemplate {
+public class AbstractNexusHadoopAdvancedTemplate {
 
-    private final NexusDatabaseAdapter adapter;
-    private final NexusEntityMapper entityMapper;
+    private final NexusHadoopAdapter adapter;
     private final NexusQueryLoader queryLoader;
     private final NexusExecutionStrategyFactory strategyFactory;
-    private final NexusQueryExecutionTemplate executionTemplate;
+    private final NexusHadoopExecutionTemplate executionTemplate;
     private final NexusLogger logger = NexusLogger.getLogger(getClass());
 
-    public NexusAdvancedTemplate(NexusDatabaseAdapter adapter,
-                                 NexusEntityMapper entityMapper,
-                                 NexusQueryLoader queryLoader,
-                                 NexusProperties properties) {
+    public AbstractNexusHadoopAdvancedTemplate(NexusHadoopAdapter adapter,
+                                               NexusQueryLoader queryLoader,
+                                               NexusProperties properties) {
         this.adapter = adapter;
-        this.entityMapper = entityMapper;
         this.queryLoader = queryLoader;
         this.strategyFactory = new NexusExecutionStrategyFactory(properties);
         this.executionTemplate = createExecutionTemplate(properties);
@@ -51,6 +44,8 @@ public class NexusAdvancedTemplate {
         String cypher = queryLoader.getQuery(queryId);
         NexusQueryContext context = new NexusQueryContext(queryId);
 
+        parameters.put("queryId", queryId);
+
         return executionTemplate.execute(cypher, parameters, resultType, context);
     }
 
@@ -61,8 +56,8 @@ public class NexusAdvancedTemplate {
         NexusQueryContext context = new NexusQueryContext("custom_query");
 
         return executionTemplate.execute(
-                query.getCypher(),
-                query.getParameters(),
+                query.cypher(),
+                query.parameters(),
                 resultType,
                 context
         );
@@ -73,27 +68,7 @@ public class NexusAdvancedTemplate {
      */
     public <T> T executeCypher(String cypher, Map<String, Object> parameters, Class<T> resultType) {
         NexusQueryContext context = new NexusQueryContext("raw_cypher");
-
         return executionTemplate.execute(cypher, parameters, resultType, context);
-    }
-
-    /**
-     * 流式查询执行
-     */
-    public <T> Stream<T> stream(String queryId, Map<String, Object> parameters, Class<T> resultType) {
-        String cypher = queryLoader.getQuery(queryId);
-        NexusQueryContext context = new NexusQueryContext(queryId);
-
-        try {
-            NexusGraphResultSet resultSet = adapter.executeQuery(cypher, parameters);
-            return resultSet.toList().stream()
-                    .map(record -> entityMapper.mapToEntity(record, resultType));
-        } catch (Exception ex) {
-            context.setExecutionTime(System.currentTimeMillis() - context.getStartTime());
-            logger.error("Stream query failed after {} ms: {}",
-                    context.getExecutionTime(), queryId, ex);
-            throw NexusExceptionHelper.executionError("Failed to execute stream query", ex);
-        }
     }
 
     /**
@@ -109,7 +84,7 @@ public class NexusAdvancedTemplate {
                 context.setCurrentOperation(i + 1);
                 context.setTotalOperations(queries.size());
 
-                adapter.executeCommand(query.getCypher(), query.getParameters());
+                adapter.execute(query.cypher(), query.parameters(), context);
             }
 
             context.setExecutionTime(System.currentTimeMillis() - context.getStartTime());
@@ -126,20 +101,20 @@ public class NexusAdvancedTemplate {
         }
     }
 
-    private NexusQueryExecutionTemplate createExecutionTemplate(NexusProperties properties) {
-        return new NexusQueryExecutionTemplate() {
-            private final NexusQueryExecutionStrategy strategy =
+    private NexusHadoopExecutionTemplate createExecutionTemplate(NexusProperties properties) {
+        return new NexusHadoopExecutionTemplate() {
+            private final NexusQueryExecutionStrategy<NexusHadoopAdapter, NexusResult> strategy =
                     strategyFactory.createStrategy(adapter);
 
             @Override
-            protected NexusGraphResultSet doExecute(String query,
-                                                    Map<String, Object> parameters,
-                                                    NexusQueryContext context) {
-                return strategy.execute(query, parameters);
+            protected NexusResult doExecute(String query,
+                                            Map<String, Object> parameters,
+                                            NexusQueryContext context) {
+                return strategy.execute(query, parameters, context);
             }
 
             @Override
-            protected <T> T convertResults(NexusGraphResultSet resultSet, Class<T> resultType) {
+            protected <T> T convertResults(NexusResult resultSet, Class<T> resultType) {
                 return (T) adapter.postExecute(resultSet, resultType);
             }
 

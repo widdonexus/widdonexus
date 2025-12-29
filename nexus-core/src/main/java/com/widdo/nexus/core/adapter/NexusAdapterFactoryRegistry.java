@@ -1,7 +1,7 @@
 package com.widdo.nexus.core.adapter;
 
-import com.widdo.nexus.core.entity.NexusEntityMapper;
 import com.widdo.nexus.core.exception.NexusConfigurationException;
+import com.widdo.nexus.core.log.LogMessages;
 import com.widdo.nexus.core.log.NexusLogger;
 import com.widdo.nexus.core.properties.NexusProperties;
 
@@ -19,21 +19,50 @@ import java.util.List;
  */
 public class NexusAdapterFactoryRegistry {
 
-    private final List<NexusAdapterFactory> factories = new ArrayList<>();
+    private final List<NexusGraphAdapterFactory> graphFactories = new ArrayList<>();
+    private final List<NexusHadoopAdapterFactory> hadoopFactories = new ArrayList<>();
     private final NexusLogger logger = NexusLogger.getLogger(getClass());
 
     public void registerFactory(NexusAdapterFactory factory) {
-        factories.add(factory);
-        logger.debug("Registered adapter factory: {0}", factory.getClass().getSimpleName());
+
+        //图数据库适配器工厂
+        if (factory instanceof NexusGraphAdapterFactory) {
+            graphFactories.add((NexusGraphAdapterFactory) factory);
+        }
+
+        //Hadoop适配器工厂
+        if (factory instanceof NexusHadoopAdapterFactory) {
+            hadoopFactories.add((NexusHadoopAdapterFactory) factory);
+        }
+
+        logger.debug(LogMessages.DATABASE_ADAPTER_REGISTER, factory.getClass().getSimpleName());
     }
 
-    public NexusDatabaseAdapter createAdapter(NexusProperties properties, NexusEntityMapper entityMapper) {
-        String databaseType = properties.getDatabase().getType();
+    public NexusGraphAdapter createGraphAdapter(NexusProperties properties) {
 
-        return factories.stream()
+        //分别处理graph和hadoop的adapter
+        String databaseType = properties.getGraph().getDatabase().getType();
+
+        //分别处理graph和hadoop的配置
+        return graphFactories.stream()
                 .filter(factory -> factory.supports(databaseType))
                 .findFirst()
-                .map(factory -> factory.createAdapter(properties, entityMapper))
+                .map(factory -> factory.createAdapter(properties))
+                .orElseThrow(() -> new NexusConfigurationException(
+                        "Unsupported database type: " + databaseType
+                ));
+    }
+
+    public NexusHadoopAdapter createHadoopAdapter(NexusProperties properties) {
+
+        //分别处理graph和hadoop的adapter
+        String databaseType = properties.getHadoop().getDatabase().getType();
+
+        //分别处理graph和hadoop的配置
+        return hadoopFactories.stream()
+                .filter(factory -> factory.supports(databaseType))
+                .findFirst()
+                .map(factory -> factory.createAdapter(properties))
                 .orElseThrow(() -> new NexusConfigurationException(
                         "Unsupported database type: " + databaseType
                 ));

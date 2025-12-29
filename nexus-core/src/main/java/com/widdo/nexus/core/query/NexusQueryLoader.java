@@ -3,6 +3,7 @@ package com.widdo.nexus.core.query;
 import com.widdo.nexus.core.annotation.Query;
 import com.widdo.nexus.core.annotation.QueryRef;
 import com.widdo.nexus.core.exception.NexusExceptionHelper;
+import com.widdo.nexus.core.log.LogMessages;
 import com.widdo.nexus.core.log.NexusLogger;
 import com.widdo.nexus.core.util.ClassScanner;
 import org.yaml.snakeyaml.Yaml;
@@ -38,7 +39,6 @@ public class NexusQueryLoader {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
             if (inputStream == null) {
                 logger.warn("Query file not found, skipping: " + filePath);
-//                throw NexusExceptionHelper.queryError("Query file not found: " + filePath);
                 return;
             }
 
@@ -59,12 +59,12 @@ public class NexusQueryLoader {
                     queries.put(queryId, wnql);
                     queryDescription.put(queryId, description);
                 });
-
-//                queries.putAll(queryMap);
             } else {
                 //TODO：计划删除 格式2: 直接是查询ID到查询语句的映射
                 data.forEach((key, value) -> queries.put(key, value.toString()));
             }
+
+            logger.info(LogMessages.QUERY_LOADER_START, filePath);
 
             System.out.println("Loaded " + queries.size() + " queries from " + filePath);
         } catch (Exception e) {

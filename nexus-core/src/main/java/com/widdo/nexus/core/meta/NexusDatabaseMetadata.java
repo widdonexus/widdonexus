@@ -16,6 +16,8 @@ import java.util.Set;
  */
 public interface NexusDatabaseMetadata {
 
+    String databaseType();
+
     String getVersion();
 
     Set<NexusDatabaseFeature> getSupportedFeatures();

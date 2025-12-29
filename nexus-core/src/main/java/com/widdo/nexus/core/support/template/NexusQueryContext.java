@@ -1,5 +1,7 @@
 package com.widdo.nexus.core.support.template;
 
+import com.widdo.nexus.core.util.HdfsCommandExtractor;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +19,14 @@ import java.util.UUID;
 public class NexusQueryContext {
 
     private final String queryId;
+    private String processedQueryId;
     private final String executionId;
     private long startTime;
     private long executionTime;
     private int currentOperation;
     private int totalOperations;
     private Map<String, Object> attributes = new HashMap<>();
+    private HdfsCommandExtractor.CommandInfo commandInfo;
 
     public NexusQueryContext(String queryId) {
         this.queryId = queryId;
@@ -32,6 +36,22 @@ public class NexusQueryContext {
 
     public String getQueryId() {
         return queryId;
+    }
+
+    public String getProcessedQueryId() {
+        return processedQueryId;
+    }
+
+    public void setProcessedQueryId(String processedQueryId) {
+        this.processedQueryId = processedQueryId;
+    }
+
+    public HdfsCommandExtractor.CommandInfo getCommandInfo() {
+        return commandInfo;
+    }
+
+    public void setCommandInfo(HdfsCommandExtractor.CommandInfo commandInfo) {
+        this.commandInfo = commandInfo;
     }
 
     public String getExecutionId() {

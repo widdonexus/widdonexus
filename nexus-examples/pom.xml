@@ -7,7 +7,6 @@
         <artifactId>widdo-nexus</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>com.widdo</groupId>
     <artifactId>nexus-examples</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>nexus-examples</name>
@@ -17,6 +16,7 @@
     <properties>
         <java.version>21</java.version>
     </properties>
+
     <dependencies>
         <!--1. 引入starter-->
         <dependency>
@@ -34,6 +34,25 @@
             <groupId>com.widdo</groupId>
             <artifactId>nexus-neo4j</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-hadoop</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
@@ -41,20 +60,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    &lt;!&ndash;指定主类&ndash;&gt;
-                    <mainClass>com.widdo.nexus.examples.NexusExamplesApplication</mainClass>
-                    &lt;!&ndash;确保在repackage时包含构建信息&ndash;&gt;
-                    <executable>true</executable>
-                    <attach>true</attach>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>build-info</goal> <!-- 生成 build-info.properties -->
                         </goals>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
         </plugins>
     </build>

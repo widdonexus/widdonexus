@@ -21,6 +21,7 @@ public class LogMessages {
             "    Widdo Nexus Framework Starting...\n" +
             "    Version: {0}\n" +
             "=========================================";
+    public static final String DATABASE_ADAPTER_REGISTER = "Registered Nexus adapter factory: {0}";
     public static final String DATABASE_ADAPTER_INIT = "Initializing Nexus database adapter for: {0}";
     public static final String QUERY_LOADER_START = "Loading queries from {0}";
     // 运行时相关
@@ -31,6 +32,7 @@ public class LogMessages {
     public static final String TRANSACTION_COMMIT = "Transaction committed: {0}";
     public static final String TRANSACTION_ROLLBACK = "Transaction rolled back: {0}";
     public static final String TRANSACTION_CLOSE = "Transaction closed: {0}";
+    public static final String HDFS_COMMAND_EXECUTING = "HDFS Command executed: {0} (type: {1}, duration: {2}ms, read: {3}, write: {4}";
     // 警告相关
     public static final String SLOW_QUERY_WARN = "Slow query detected ({0} ms): {1}";
     public static final String DEPRECATED_API_WARN = "Deprecated API used: {0}";

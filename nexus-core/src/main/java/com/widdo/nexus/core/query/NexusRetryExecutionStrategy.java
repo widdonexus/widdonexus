@@ -1,12 +1,13 @@
 package com.widdo.nexus.core.query;
 
-import com.widdo.nexus.core.adapter.NexusDatabaseAdapter;
+import com.widdo.nexus.core.adapter.NexusGraphAdapter;
 import com.widdo.nexus.core.enums.QueryExecutionType;
 import com.widdo.nexus.core.exception.NexusConnectionException;
 import com.widdo.nexus.core.exception.NexusException;
 import com.widdo.nexus.core.exception.NexusExceptionHelper;
 import com.widdo.nexus.core.log.NexusLogger;
 import com.widdo.nexus.core.result.NexusGraphResultSet;
+import com.widdo.nexus.core.support.template.NexusQueryContext;
 
 import java.util.Map;
 
@@ -19,21 +20,21 @@ import java.util.Map;
  * @date 2025/08/27 18:19
  * @since 0.0.1-SNAPSHOT
  */
-public class NexusRetryExecutionStrategy implements NexusQueryExecutionStrategy {
+public class NexusRetryExecutionStrategy implements NexusQueryExecutionStrategy<NexusGraphAdapter,NexusGraphResultSet> {
 
-    private final NexusDatabaseAdapter adapter;
+    private final NexusGraphAdapter adapter;
     private final int maxRetries;
     private final long retryDelayMs;
     private final NexusLogger logger = NexusLogger.getLogger(getClass());
 
-    public NexusRetryExecutionStrategy(NexusDatabaseAdapter adapter, int maxRetries, long retryDelayMs) {
+    public NexusRetryExecutionStrategy(NexusGraphAdapter adapter, int maxRetries, long retryDelayMs) {
         this.adapter = adapter;
         this.maxRetries = maxRetries;
         this.retryDelayMs = retryDelayMs;
     }
 
     @Override
-    public NexusGraphResultSet execute(String query, Map<String, Object> parameters) {
+    public NexusGraphResultSet execute(String query, Map<String, Object> parameters, NexusQueryContext context) {
         int attempt = 0;
         NexusException lastException = null;
 

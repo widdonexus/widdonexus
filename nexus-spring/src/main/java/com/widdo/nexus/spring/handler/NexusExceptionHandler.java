@@ -67,7 +67,7 @@ public class NexusExceptionHandler {
         return ErrorResponse.builder()
                 .timestamp(Instant.now())
                 .errorCode(ex.getErrorCode())
-                .message(ex.getMessage())
+                .message(ex.getCause().getMessage())
                 .path(getRequestPath(request))
                 .context(includeStackTrace ? ex.getContext() : filterSensitiveContext(ex.getContext()))
                 .stacktrace(includeStackTrace ? getStackTrace(ex) : null)

@@ -34,6 +34,11 @@
             <artifactId>nexus-spring</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.widdo</groupId>
+            <artifactId>nexus-neo4j</artifactId>
+        </dependency>
+
         <!-- 工具依赖 -->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>

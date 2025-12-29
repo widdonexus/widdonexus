@@ -1,0 +1,13 @@
+queries:
+  mkdirs:
+    wnql: |
+      hdfs dfs -mkdirs $target
+    description: 创建文件夹
+  put:
+    wnql: |
+      hdfs dfs -put $delSrc $overwrite $source $target
+    description: 上传文件
+  get:
+    wnql: |
+      hdfs dfs -get
+    description: 下载文件

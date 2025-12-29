@@ -11,23 +11,7 @@ import java.util.Map;
  * @date 2025/08/27 15:27
  * @since 0.0.1-SNAPSHOT
  */
-public class NexusQuery {
-
-    private final String cypher;
-    private final Map<String, Object> parameters;
-
-    public NexusQuery(String cypher, Map<String, Object> parameters) {
-        this.cypher = cypher;
-        this.parameters = parameters;
-    }
-
-    public String getCypher() {
-        return cypher;
-    }
-
-    public Map<String, Object> getParameters() {
-        return parameters;
-    }
+public record NexusQuery(String cypher, Map<String, Object> parameters) {
 
     @Override
     public String toString() {
